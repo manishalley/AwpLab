@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>
+            Armstrong
+        </title>
+    </head>
+    <body>
+        <script>
+        let a=prompt("enter the number")
+        a=Number(a)
+       
+        function armstrong(n){
+            let sum=0
+             let ori=n
+            while(ori>0){
+                var digit=ori%10
+                sum+=digit*digit*digit
+                ori=Math.floor(ori/10)
+            }
+            return sum==ori
+        }
+        if(armstrong(a)){
+            alert("true")
+        }
+        else{
+            alert("false")
+        }
+        </script>
+    </body>
+</html>

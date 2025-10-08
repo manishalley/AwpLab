@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .frm {
+      background: white;
+      padding: 20px;
+      max-width: 320px;
+      margin: auto;
+      border-radius: 6px;
+      box-shadow: 0 0 6px #ccc;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 6px 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    div:hover{
+      transition: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    }
+    button {
+      width: 48%;
+      margin-top: 16px;
+      padding: 10px 0;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor:crosshair;
+    }
+    #insertBtn { background: #4caf50; color: white; }
+    #deleteBtn { background: #000000; color: white; }
+    #updateBtn { background: #2196f3; color: white; }
+    #submitBtn { background: #9c27b0; color: white; }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    .buttons:hover{
+      color:#000000;
+      background-color: #d8b61f;
+
+    }
+  </style>
+</head>
+<body>
+  <div class="frm">
+    <label for="nm">Student Name:</label>
+    <input type="text" id="nm" />
+
+    <label for="rn">Roll No:</label>
+    <input type="text" id="rn" />
+
+    <label for="br">Branch:</label>
+    <input type="text" id="br" />
+
+    <label for="yr">Year:</label>
+    <input type="number" id="yr" />
+
+    <label for="cg">CGPA:</label>
+    <input type="number" step="0.01" id="cg" />
+
+    <div class="buttons">
+      <button id="insertBtn">Insert</button>
+      <button id="deleteBtn">Delete</button>
+      <button id="updateBtn">Update</button>
+      <button id="submitBtn">Submit</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getDatabase, ref, push, set, remove, update } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA3bjgya8GRx1j0V5glCvoC2b2iz5sqWcs",
+      authDomain: "studentmanagement-c57a6.firebaseapp.com",
+      databaseURL: "https://studentmanagement-c57a6-default-rtdb.firebaseio.com",
+      projectId: "studentmanagement-c57a6",
+      storageBucket: "studentmanagement-c57a6.appspot.com",
+      messagingSenderId: "170104398252",
+      appId: "1:170104398252:web:7c446b5d734bda58bf1a09"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const nm = document.getElementById("nm");
+    const rn = document.getElementById("rn");
+    const br = document.getElementById("br");
+    const yr = document.getElementById("yr");
+    const cg = document.getElementById("cg");
+
+    const insertBtn = document.getElementById("insertBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const updateBtn = document.getElementById("updateBtn");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function getData() {
+      return {
+        name: nm.value.trim(),
+        roll: rn.value.trim(),
+        branch: br.value.trim(),
+        year: Number(yr.value),
+        cgpa: Number(cg.value)
+      };
+    }
+
+    insertBtn.onclick = () => {
+      const data = getData();
+      if (!data.roll) return alert("Roll No is required.");
+      set(ref(db, "students/" + data.roll), data)
+        .then(() => alert("Inserted/Overwritten successfully"))
+        .catch(e => alert(e.message));
+    };
+
+    deleteBtn.onclick = () => {
+      const roll = rn.value.trim();
+      if (!roll) return alert("Roll No is required.");
+      remove(ref(db, "students/" + roll))
+        .then(() => alert("Deleted successfully"))
+        .catch(e => alert(e.message));
+    };
+
+    updateBtn.onclick = () => {
+      const data = getData();
+      if (!data.roll) return alert("Roll No is required.");
+      const updates = {...data};
+      delete updates.roll;
+      update(ref(db, "students/" + data.roll), updates)
+        .then(() => alert("Updated successfully"))
+        .catch(e => alert(e.message));
+    };
+
+    submitBtn.onclick = () => {
+      const data = getData();
+      if (!data.name || !data.roll) return alert("Name and Roll No are required.");
+      push(ref(db, "students"), data)
+        .then(() => {
+          alert("Pushed successfully");
+          nm.value = rn.value = br.value = yr.value = cg.value = "";
+        })
+        .catch(e => alert(e.message));
+    };
+  </script>
+</body>
+</html>
